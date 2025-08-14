@@ -751,51 +751,52 @@ def _player_percentiles_for_metrics(player_series, metrics):
     return [float(player_series.get(f"{m}_pct", 0.0)) for m in metrics]
 
 def _build_scatterpolar_trace(player_series, metrics, player_label, color, show_text=False):
+    """
+    Builds a single Scatterpolar trace for a player.
+    Adjusted for increased transparency.
+    """
     values = _player_percentiles_for_metrics(player_series, metrics)
     # Close the radar by repeating the first point
     values += values[:1]
     theta = metrics + [metrics[0]]
 
-    # Text values are percentile integers; initially hidden (transparent); JS will reveal on legend hover
     text_vals = [f"{int(round(v))}" for v in values]
-    text_vals[-1] = text_vals[0]  # closing point label same as first
+    text_vals[-1] = text_vals[0]
 
     trace = go.Scatterpolar(
         r=values,
         theta=theta,
         mode="lines+markers+text",
         name=player_label,
-        line=dict(width=2),
-        marker=dict(size=5),
+        line=dict(width=2, color=color),
+        marker=dict(size=5, color=color),
         text=text_vals if show_text else text_vals,
-        textfont=dict(size=11, color="rgba(0,0,0,0)"),  # invisible initially
+        textfont=dict(size=11, color="rgba(0,0,0,0)"),
         textposition="top center",
         hovertemplate="%{theta}<br>%{r:.0f}th percentile<extra>" + player_label + "</extra>",
         fill="toself",
-        opacity=0.95,
+        # Lower opacity for a more transparent look
+        fillcolor=f"rgba({int(color[1:3], 16)}, {int(color[3:5], 16)}, {int(color[5:7], 16)}, 0.2)",
+        opacity=0.6,
         legendgroup=player_label,
-        hoveron="points+fills"
+        hoveron="points+fills",
     )
-    # Assign color (line and fill)
-    trace.line.color = color
-    trace.fillcolor = color.replace('#', 'rgba(') if False else color  # will manage alpha via opacity
     return trace
+
 
 def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
     """
-    Returns a Plotly Figure for a single radar (one of the 6), with multiple players overlaid.
-    Legend hover will be handled via injected JS in render_plotly_with_legend_hover().
+    Generates a Plotly Figure for a radar chart with multiple players.
     """
     metrics_dict = radar_config['metrics']
     group_name = radar_config['name']
-    base_color = radar_config.get('color', '#1f77b4')
-
+    
     metrics, labels = _radar_angles_labels(metrics_dict)
-
-    # Distinct but harmonious colors (keep stable ordering)
+    
+    # Using a more vibrant, distinct palette for better visibility
     palette = [
-        "#00f2ff", "#ff0052", "#00ff7f", "#ffc400",
-        "#c800ff", "#f97306", "#1E90FF", "#FF7F50"
+        "#FF5733", "#33FF57", "#3357FF", "#FF33F5",
+        "#F5FF33", "#33FFF5", "#FFC300", "#FF33A1"
     ]
 
     fig = go.Figure()
@@ -805,10 +806,11 @@ def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
         season_name = player_series.get('season_name', 'Unknown')
         label = f"{player_name} ({season_name})"
         color = palette[i % len(palette)]
-        trace = _build_scatterpolar_trace(player_series, metrics, label, color, show_text=False)
+        trace = _build_scatterpolar_trace(player_series, metrics, label, color)
         fig.add_trace(trace)
 
     fig.update_layout(
+        # ... (rest of the layout code remains the same)
         title=dict(
             text=group_name,
             x=0.5, xanchor='center',
@@ -827,7 +829,7 @@ def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
         polar=dict(
             bgcolor=bg_color,
             radialaxis=dict(range=[0, 100], showline=False, showticklabels=True, tickfont=dict(color="white", size=10),
-                            gridcolor="rgba(255,255,255,0.15)", tickangle=0),
+                             gridcolor="rgba(255,255,255,0.15)", tickangle=0),
             angularaxis=dict(
                 tickvals=metrics,
                 ticktext=labels,
@@ -841,7 +843,6 @@ def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
         hovermode="closest"
     )
 
-    # Extra padding below legend so labels never collide
     fig.update_layout(height=520)
 
     return fig, metrics
