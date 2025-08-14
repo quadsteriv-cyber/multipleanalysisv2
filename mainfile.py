@@ -91,7 +91,6 @@ COMPETITION_SEASONS = {
 }
 
 # Archetype definitions
-STRIKER_ARCHETYPES = {
 # Archetype definitions
 STRIKER_ARCHETYPES = {
     "Poacher (Fox in the Box)": {
@@ -125,6 +124,7 @@ STRIKER_ARCHETYPES = {
         "key_weight": 1.5
     },
 }
+
 # Radar metrics
 STRIKER_RADAR_METRICS = {
     'finishing': {
