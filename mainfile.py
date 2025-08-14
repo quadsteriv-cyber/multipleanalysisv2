@@ -740,7 +740,7 @@ def find_matches(target_player, pool_df, archetype_config, search_mode='similar'
     else:
         return pool_df.sort_values('similarity_score', ascending=False)
 
-# --- 6. RADAR CHART FUNCTIONS ---
+
 
 # --- 6. RADAR CHART FUNCTIONS (UPDATED) ---
 
@@ -796,6 +796,9 @@ def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
     metrics_dict = radar_config['metrics']
     group_name = radar_config['name']
 
+    # This function is correct and returns a list of metrics and labels
+    metrics, labels = _radar_angles_labels(metrics_dict)
+
     # Updated color palette as requested
     palette = [
         '#FF0000',  # Red
@@ -822,15 +825,18 @@ def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
         rgb_color = tuple(int(color[j:j+2], 16) for j in (1, 3, 5))
         rgba_fillcolor = f'rgba({rgb_color[0]}, {rgb_color[1]}, {rgb_color[2]}, 0.2)'
         
+        # Get the percentile values for the player's metrics
+        percentile_values = _player_percentiles_for_metrics(player_series, metrics)
+        
         # Build the trace with the specified color
         trace = go.Scatterpolar(
-            r=_player_percentiles_for_metrics(player_series, metrics) + [_player_percentiles_for_metrics(player_series, metrics)[0]],
+            r=percentile_values + [percentile_values[0]],
             theta=metrics + [metrics[0]],
             mode="lines+markers+text",
             name=label,
             line=dict(width=2, color=color),
             marker=dict(size=5, color=color),
-            text=[f"{int(round(v))}" for v in _player_percentiles_for_metrics(player_series, metrics)] + [f"{int(round(_player_percentiles_for_metrics(player_series, metrics)[0]))}"],
+            text=[f"{int(round(v))}" for v in percentile_values] + [f"{int(round(percentile_values[0]))}"],
             textfont=dict(size=11, color="rgba(0,0,0,0)"),
             textposition="top center",
             hovertemplate="%{theta}<br>%{r:.0f}th percentile<extra>" + label + "</extra>",
