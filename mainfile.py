@@ -92,53 +92,39 @@ COMPETITION_SEASONS = {
 
 # Archetype definitions
 STRIKER_ARCHETYPES = {
+# Archetype definitions
+STRIKER_ARCHETYPES = {
     "Poacher (Fox in the Box)": {
-        "description": "Clinical finisher, thrives in the penalty area, instinctive movement, minimal involvement in build-up.",
-        "identity_metrics": ['npg_90', 'np_xg_90', 'conversion_ratio', 'touches_inside_box_90', 'shot_touch_ratio', 'np_xg_per_shot'],
+        "description": "A clinical finisher who thrives in the penalty area with instinctive movement and a high shot volume. Minimal involvement in build-up play outside the final third. They prioritize shooting over passing.",
+        "identity_metrics": ['npg_90', 'np_xg_90', 'np_shots_90', 'touches_inside_box_90', 'conversion_ratio', 'np_xg_per_shot', 'shot_touch_ratio', 'op_xgchain_90'],
         "key_weight": 1.7
     },
     "Target Man": {
-        "description": "Strong aerial presence, holds up the ball, physical dominance.",
-        "identity_metrics": ['aerial_wins_90', 'aerial_ratio', 'fouls_won_90', 'op_xgbuildup_90', 'touches_inside_box_90', 'passes_into_box_90'],
+        "description": "A physically dominant forward with a strong aerial presence, excels at holding up the ball and bringing teammates into play. They are a focal point for long balls and physical duels.",
+        "identity_metrics": ['aerial_wins_90', 'aerial_ratio', 'fouls_won_90', 'op_xgbuildup_90', 'carries_90', 'touches_inside_box_90', 'long_balls_90', 'passing_ratio'],
         "key_weight": 1.6
     },
     "Complete Forward": {
-        "description": "Well-rounded—good finishing, dribbling, link-up, and movement.",
-        "identity_metrics": ['npg_90', 'key_passes_90', 'dribbles_90', 'deep_progressions_90', 'op_xgbuildup_90', 'aerial_wins_90'],
+        "description": "A well-rounded striker capable of doing everything: finishing, dribbling, linking up play, and making intelligent runs. A central figure in both goal-scoring and chance creation.",
+        "identity_metrics": ['npg_90', 'key_passes_90', 'dribbles_90', 'deep_progressions_90', 'op_xgbuildup_90', 'aerial_wins_90', 'op_xgchain_90', 'npxgxa_90'],
         "key_weight": 1.6
     },
     "False 9": {
-        "description": "Drops deep into midfield, playmaker-like vision, technical excellence.",
-        "identity_metrics": ['op_xgbuildup_90', 'key_passes_90', 'through_balls_90', 'dribbles_90', 'carries_90', 'xa_90'],
+        "description": "A forward who drops deep into midfield to link play, acting more like a playmaker than a traditional striker. They possess excellent technical skills, vision, and a high xG buildup contribution.",
+        "identity_metrics": ['op_xgbuildup_90', 'key_passes_90', 'through_balls_90', 'dribbles_90', 'carries_90', 'xa_90', 'forward_pass_proportion', 'passing_ratio'],
         "key_weight": 1.5
     },
     "Advanced Forward": {
-        "description": "Prioritizes runs in behind, thrives on through balls, pace-driven.",
-        "identity_metrics": ['deep_progressions_90', 'through_balls_90', 'np_shots_90', 'touches_inside_box_90', 'npg_90', 'np_xg_90'],
+        "description": "A pacey forward who primarily makes runs in behind the defensive line. They thrive on through balls and quick transitions, focusing on getting into dangerous areas to shoot.",
+        "identity_metrics": ['deep_progressions_90', 'through_balls_90', 'np_shots_90', 'touches_inside_box_90', 'npg_90', 'np_xg_90', 'dribbles_90', 'npxgxa_90'],
         "key_weight": 1.6
     },
     "Pressing Forward": {
-        "description": "Defensive work rate, triggers press, harasses defenders.",
-        "identity_metrics": ['pressures_90', 'pressure_regains_90', 'counterpressures_90', 'aggressive_actions_90', 'padj_tackles_90', 'fouls_90'],
+        "description": "A high-energy striker whose main defensive contribution is to harass and pressure opposition defenders. They have a high work rate and actively participate in winning the ball back.",
+        "identity_metrics": ['pressures_90', 'pressure_regains_90', 'counterpressures_90', 'aggressive_actions_90', 'padj_tackles_90', 'fouls_90', 'fhalf_pressures_90', 'fhalf_counterpressures_90'],
         "key_weight": 1.5
     },
-    "Second Striker (Support Striker)": {
-        "description": "Operates just behind main striker, creative link, dribbler.",
-        "identity_metrics": ['dribbles_90', 'key_passes_90', 'xa_90', 'touches_inside_box_90', 'npg_90', 'carries_90'],
-        "key_weight": 1.5
-    },
-    "Deep-Lying Forward": {
-        "description": "Drops into midfield to orchestrate play, but still a striker.",
-        "identity_metrics": ['op_xgbuildup_90', 'key_passes_90', 'long_balls_90', 'through_balls_90', 'carries_90', 'passing_ratio'],
-        "key_weight": 1.5
-    },
-    "Wide Forward": {
-        "description": "Starts wide but cuts inside; often part of a front two or fluid front three.",
-        "identity_metrics": ['dribbles_90', 'crosses_90', 'deep_progressions_90', 'touches_inside_box_90', 'npg_90', 'np_shots_90'],
-        "key_weight": 1.6
-    }
 }
-
 # Radar metrics
 STRIKER_RADAR_METRICS = {
     'finishing': {
@@ -196,21 +182,28 @@ STRIKER_RADAR_METRICS = {
     }
 }
 
+# --- REVISED WINGER_ARCHETYPES ---
+
 WINGER_ARCHETYPES = {
     "Goal-Scoring Winger": {
-        "description": "A winger focused on cutting inside to shoot and score goals.",
-        "identity_metrics": ['npg_90', 'np_xg_90', 'np_shots_90', 'touches_inside_box_90', 'np_xg_per_shot', 'dribbles_90'],
+        "description": "A winger focused on cutting inside to shoot and score goals, often functioning as a wide forward. They have a high goal threat and strong dribbling ability.",
+        "identity_metrics": ['npg_90', 'np_xg_90', 'np_shots_90', 'touches_inside_box_90', 'np_xg_per_shot', 'dribbles_90', 'over_under_performance_90', 'npxgxa_90', 'op_passes_into_box_90'],
         "key_weight": 1.6
     },
     "Creative Playmaker": {
-        "description": "A winger who creates chances for others through key passes and assists.",
-        "identity_metrics": ['xa_90', 'key_passes_90', 'op_passes_into_box_90', 'through_balls_90', 'op_xgbuildup_90', 'deep_progressions_90'],
+        "description": "A winger who creates chances for others through key passes, crosses, and assists. They are a primary source of creativity from wide areas and often have a high xG buildup contribution.",
+        "identity_metrics": ['xa_90', 'key_passes_90', 'op_passes_into_box_90', 'through_balls_90', 'op_xgbuildup_90', 'deep_progressions_90', 'crosses_90', 'dribbles_90', 'fouls_won_90'],
         "key_weight": 1.5
     },
     "Traditional Winger": {
-        "description": "Focuses on providing width, dribbling down the line, and delivering crosses.",
-        "identity_metrics": ['crosses_90', 'crossing_ratio', 'dribbles_90', 'carry_length', 'deep_progressions_90', 'fouls_won_90'],
+        "description": "A winger who focuses on providing width and stretching the opposition defense. Their primary actions are dribbling down the line and delivering crosses into the box.",
+        "identity_metrics": ['crosses_90', 'crossing_ratio', 'dribbles_90', 'carry_length', 'deep_progressions_90', 'fouls_won_90', 'op_passes_into_box_90', 'turnovers_90'],
         "key_weight": 1.5
+    },
+    "Inverted Winger": {
+        "description": "A winger who plays on the opposite flank of their strong foot, allowing them to cut inside and create. They are defined by a high volume of successful dribbles and a strong role in ball progression and attacking buildup.",
+        "identity_metrics": ['dribbles_90', 'dribble_ratio', 'carries_90', 'carry_length', 'deep_progressions_90', 'op_xgbuildup_90', 'op_passes_into_box_90', 'xa_90'],
+        "key_weight": 1.6
     }
 }
 
@@ -269,41 +262,37 @@ WINGER_RADAR_METRICS = {
 
 CM_ARCHETYPES = {
     "Deep-Lying Playmaker (Regista)": {
-        "description": "Dictates tempo from deep, excels in progressive passing.",
-        "identity_metrics": ['op_xgbuildup_90', 'long_balls_90', 'long_ball_ratio', 'forward_pass_proportion', 'passing_ratio', 'through_balls_90'],
+        "description": "A midfielder who dictates tempo from deep positions, excelling in progressive passing and ball distribution to start attacks. They are the team's engine from the defensive half.",
+        "identity_metrics": ['op_xgbuildup_90', 'long_balls_90', 'long_ball_ratio', 'forward_pass_proportion', 'passing_ratio', 'through_balls_90', 'op_f3_passes_90', 'carries_90'],
         "key_weight": 1.6
     },
     "Box-to-Box Midfielder (B2B)": {
-        "description": "Covers large vertical space, contributes in both boxes.",
-        "identity_metrics": ['deep_progressions_90', 'carries_90', 'padj_tackles_and_interceptions_90', 'pressures_90', 'npg_90', 'touches_inside_box_90'],
+        "description": "A high-energy midfielder who covers large vertical space on the pitch, contributing heavily in both attack and defense. They are involved in ball progression, tackling, and late runs into the box.",
+        "identity_metrics": ['deep_progressions_90', 'carries_90', 'padj_tackles_and_interceptions_90', 'pressures_90', 'npg_90', 'touches_inside_box_90', 'op_xgchain_90', 'offensive_duels_90'],
         "key_weight": 1.6
     },
     "Ball-Winning Midfielder (Destroyer)": {
-        "description": "Breaks up play, screens defense.",
-        "identity_metrics": ['padj_tackles_90', 'padj_interceptions_90', 'pressure_regains_90', 'challenge_ratio', 'aggressive_actions_90', 'fouls_90'],
+        "description": "A defensive-minded midfielder who breaks up opposition attacks, screens the defense, and wins possession. They are defined by their tenacity and high volume of defensive actions.",
+        "identity_metrics": ['padj_tackles_90', 'padj_interceptions_90', 'pressure_regains_90', 'challenge_ratio', 'aggressive_actions_90', 'fouls_90', 'dribbled_past_90'],
         "key_weight": 1.6
     },
     "Advanced Playmaker (Mezzala)": {
-        "description": "Operates in half-spaces, creates in advanced zones.",
-        "identity_metrics": ['xa_90', 'key_passes_90', 'op_passes_into_box_90', 'through_balls_90', 'dribbles_90', 'np_shots_90'],
-        "key_weight": 1.5
-    },
-    "Transition Midfielder (Tempo Carrier)": {
-        "description": "Drives forward in transition, breaks lines with carries.",
-        "identity_metrics": ['carries_90', 'carry_length', 'dribbles_90', 'dribble_ratio', 'deep_progressions_90', 'fouls_won_90'],
+        "description": "A creative midfielder who operates in the half-spaces and creates chances in advanced zones. They are excellent dribblers and key passers who often make runs into the final third.",
+        "identity_metrics": ['xa_90', 'key_passes_90', 'op_passes_into_box_90', 'through_balls_90', 'dribbles_90', 'np_shots_90', 'op_xgbuildup_90', 'deep_progressions_90'],
         "key_weight": 1.5
     },
     "Holding Midfielder (Anchor)": {
-        "description": "Protects the backline, distributes safely.",
-        "identity_metrics": ['padj_interceptions_90', 'passing_ratio', 'op_xgbuildup_90', 'pressures_90', 'challenge_ratio', 'turnovers_90'],
+        "description": "A conservative midfielder who protects the backline and distributes the ball safely and efficiently. They are defined by their positional discipline and high pass completion rate.",
+        "identity_metrics": ['padj_interceptions_90', 'passing_ratio', 'op_xgbuildup_90', 'pressures_90', 'challenge_ratio', 'turnovers_90', 'padj_clearances_90', 's_pass_length'],
         "key_weight": 1.5
     },
     "Attacking Midfielder (8.5 Role)": {
-        "description": "Focused on final-third involvement.",
-        "identity_metrics": ['npg_90', 'np_xg_90', 'xa_90', 'key_passes_90', 'touches_inside_box_90', 'np_shots_90'],
+        "description": "An aggressive, goal-oriented midfielder who operates closer to the opposition box, focusing on final-third involvement and attacking output, similar to a second striker.",
+        "identity_metrics": ['npg_90', 'np_xg_90', 'xa_90', 'key_passes_90', 'touches_inside_box_90', 'np_shots_90', 'op_passes_into_box_90', 'dribbles_90'],
         "key_weight": 1.6
     }
 }
+
 
 CM_RADAR_METRICS = {
     'defending': {
@@ -360,21 +349,27 @@ CM_RADAR_METRICS = {
     }
 }
 
+# --- REVISED FULLBACK_ARCHETYPES ---
 FULLBACK_ARCHETYPES = {
     "Attacking Fullback": {
-        "description": "High attacking output with crosses, key passes, and forward runs into the final third.",
-        "identity_metrics": ['xa_90', 'crosses_90', 'op_passes_into_box_90', 'deep_progressions_90', 'key_passes_90', 'op_xgbuildup_90'],
+        "description": "An offensive-minded full-back with high attacking output, including crosses, key passes, and deep forward runs into the final third to create chances.",
+        "identity_metrics": ['xa_90', 'crosses_90', 'op_passes_into_box_90', 'deep_progressions_90', 'key_passes_90', 'op_xgbuildup_90', 'dribbles_90', 'fouls_won_90'],
         "key_weight": 1.5
     },
     "Defensive Fullback": {
-        "description": "Solid defensive foundation with tackles, interceptions, and aerial duels.",
-        "identity_metrics": ['padj_tackles_and_interceptions_90', 'challenge_ratio', 'aggressive_actions_90', 'pressures_90', 'aerial_wins_90', 'aerial_ratio'],
+        "description": "A traditional full-back with a solid defensive foundation, focusing on preventing attacks through tackling, interceptions, and aerial duels.",
+        "identity_metrics": ['padj_tackles_and_interceptions_90', 'challenge_ratio', 'aggressive_actions_90', 'pressures_90', 'aerial_wins_90', 'aerial_ratio', 'dribbled_past_90', 'padj_clearances_90'],
         "key_weight": 1.5
     },
     "Modern Wingback": {
-        "description": "High energy player who covers huge distances, contributing in all phases of play.",
-        "identity_metrics": ['deep_progressions_90', 'crosses_90', 'dribbles_90', 'padj_tackles_and_interceptions_90', 'pressures_90', 'xa_90'],
+        "description": "A high-energy, all-action player who contributes in both defense and attack. They possess high stamina and cover large distances, excelling in both progression and defensive work rate.",
+        "identity_metrics": ['deep_progressions_90', 'crosses_90', 'dribbles_90', 'padj_tackles_and_interceptions_90', 'pressures_90', 'xa_90', 'pressure_regains_90', 'op_xgbuildup_90'],
         "key_weight": 1.6
+    },
+    "Inverted Fullback": {
+        "description": "A fullback who moves into central midfield areas when their team has possession, excelling at linking play and progressive passing from deep zones.",
+        "identity_metrics": ['passing_ratio', 'deep_progressions_90', 'op_xgbuildup_90', 'carries_90', 'forward_pass_proportion', 'padj_tackles_90', 'padj_interceptions_90', 'dribble_ratio'],
+        "key_weight": 1.7
     }
 }
 
@@ -429,21 +424,27 @@ FULLBACK_RADAR_METRICS = {
     }
 }
 
+# --- REVISED CB_ARCHETYPES ---
 CB_ARCHETYPES = {
     "Ball-Playing Defender": {
-        "description": "Comfortable in possession, initiates attacks from the back with progressive passing.",
-        "identity_metrics": ['op_xgbuildup_90', 'passing_ratio', 'long_balls_90', 'long_ball_ratio', 'forward_pass_proportion', 'carries_90'],
+        "description": "A defender comfortable in possession, who initiates attacks from the back with progressive passing, long balls, and carries into midfield. They are defined by their on-ball ability.",
+        "identity_metrics": ['op_xgbuildup_90', 'passing_ratio', 'long_balls_90', 'long_ball_ratio', 'forward_pass_proportion', 'carries_90', 'deep_progressions_90', 'op_f3_passes_90'],
         "key_weight": 1.5
     },
     "Stopper": {
-        "description": "Aggressive defender who steps out to challenge attackers and win the ball high up the pitch.",
-        "identity_metrics": ['aggressive_actions_90', 'padj_tackles_90', 'challenge_ratio', 'pressures_90', 'aerial_wins_90', 'fouls_90'],
+        "description": "An aggressive defender who steps out to challenge attackers and win the ball high up the pitch. They rely on their physical and combative qualities to break up play before it reaches the box.",
+        "identity_metrics": ['aggressive_actions_90', 'padj_tackles_90', 'challenge_ratio', 'pressures_90', 'aerial_wins_90', 'fouls_90', 'pressure_regains_90', 'dribbled_past_90'],
         "key_weight": 1.6
     },
     "Covering Defender": {
-        "description": "Reads the game well, relying on positioning and interceptions to sweep up behind the defensive line.",
-        "identity_metrics": ['padj_interceptions_90', 'padj_clearances_90', 'dribbled_past_90', 'pressure_regains_90', 'aerial_ratio', 'passing_ratio'],
+        "description": "A defender who reads the game well and relies on superior positioning and interceptions to sweep up behind the defensive line. They are defined by their intelligence and ability to recover the ball with minimal duels.",
+        "identity_metrics": ['padj_interceptions_90', 'padj_clearances_90', 'dribbled_past_90', 'pressure_regains_90', 'aerial_ratio', 'passing_ratio', 'turnovers_90', 'average_x_defensive_action'],
         "key_weight": 1.5
+    },
+    "No-Nonsense Defender": {
+        "description": "A physical defender who prioritizes safety and direct action. They excel at aerial duels, clearances, and tackling, with minimal involvement in attacking buildup or ball progression.",
+        "identity_metrics": ['padj_clearances_90', 'aerial_wins_90', 'aerial_ratio', 'padj_tackles_90', 'aggressive_actions_90', 'op_xgbuildup_90', 'passing_ratio', 'turnovers_90'],
+        "key_weight": 1.7
     }
 }
 
