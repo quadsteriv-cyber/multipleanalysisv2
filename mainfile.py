@@ -742,18 +742,23 @@ def find_matches(target_player, pool_df, archetype_config, search_mode='similar'
 
 # --- 6. RADAR CHART FUNCTIONS ---
 
+# --- 6. RADAR CHART FUNCTIONS (UPDATED) ---
+
+# This function remains the same as your original code, as it's not a part of the requested changes.
 def _radar_angles_labels(metrics_dict):
     labels = list(metrics_dict.values())
     metrics = list(metrics_dict.keys())
     return metrics, labels
 
+# This function remains the same as your original code, as it's not a part of the requested changes.
 def _player_percentiles_for_metrics(player_series, metrics):
     return [float(player_series.get(f"{m}_pct", 0.0)) for m in metrics]
+
 
 def _build_scatterpolar_trace(player_series, metrics, player_label, color, show_text=False):
     """
     Builds a single Scatterpolar trace for a player.
-    Adjusted for increased transparency.
+    Adjusted for increased transparency and a more distinct hover effect.
     """
     values = _player_percentiles_for_metrics(player_series, metrics)
     # Close the radar by repeating the first point
@@ -777,27 +782,33 @@ def _build_scatterpolar_trace(player_series, metrics, player_label, color, show_
         fill="toself",
         # Lower opacity for a more transparent look
         fillcolor=f"rgba({int(color[1:3], 16)}, {int(color[3:5], 16)}, {int(color[5:7], 16)}, 0.2)",
-        opacity=0.6,
+        opacity=0.8,
         legendgroup=player_label,
         hoveron="points+fills",
     )
     return trace
 
-
 def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
     """
     Generates a Plotly Figure for a radar chart with multiple players.
+    Uses the specified color palette for improved readability.
     """
     metrics_dict = radar_config['metrics']
     group_name = radar_config['name']
-    
-    metrics, labels = _radar_angles_labels(metrics_dict)
-    
-    # Using a more vibrant, distinct palette for better visibility
+
+    # Updated color palette as requested
     palette = [
-        "#FF5733", "#33FF57", "#3357FF", "#FF33F5",
-        "#F5FF33", "#33FFF5", "#FFC300", "#FF33A1"
+        '#FF0000',  # Red
+        '#0000FF',  # Blue
+        '#00FF00',  # Green
+        '#FFA500',  # Orange
+        '#FFC0CB',  # Pink
     ]
+    # Fallback colors if more than 5 players are compared
+    fallback_palette = [
+        "#FFFF00", "#00FFFF", "#800080", "#FFD700"
+    ]
+    full_palette = palette + fallback_palette
 
     fig = go.Figure()
 
@@ -805,12 +816,33 @@ def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
         player_name = player_series.get('player_name', 'Unknown')
         season_name = player_series.get('season_name', 'Unknown')
         label = f"{player_name} ({season_name})"
-        color = palette[i % len(palette)]
-        trace = _build_scatterpolar_trace(player_series, metrics, label, color)
+        color = full_palette[i % len(full_palette)]
+
+        # Convert hex to RGB for a slight transparency
+        rgb_color = tuple(int(color[j:j+2], 16) for j in (1, 3, 5))
+        rgba_fillcolor = f'rgba({rgb_color[0]}, {rgb_color[1]}, {rgb_color[2]}, 0.2)'
+        
+        # Build the trace with the specified color
+        trace = go.Scatterpolar(
+            r=_player_percentiles_for_metrics(player_series, metrics) + [_player_percentiles_for_metrics(player_series, metrics)[0]],
+            theta=metrics + [metrics[0]],
+            mode="lines+markers+text",
+            name=label,
+            line=dict(width=2, color=color),
+            marker=dict(size=5, color=color),
+            text=[f"{int(round(v))}" for v in _player_percentiles_for_metrics(player_series, metrics)] + [f"{int(round(_player_percentiles_for_metrics(player_series, metrics)[0]))}"],
+            textfont=dict(size=11, color="rgba(0,0,0,0)"),
+            textposition="top center",
+            hovertemplate="%{theta}<br>%{r:.0f}th percentile<extra>" + label + "</extra>",
+            fill="toself",
+            fillcolor=rgba_fillcolor,
+            opacity=0.8,
+            legendgroup=label,
+            hoveron="points+fills",
+        )
         fig.add_trace(trace)
 
     fig.update_layout(
-        # ... (rest of the layout code remains the same)
         title=dict(
             text=group_name,
             x=0.5, xanchor='center',
@@ -850,7 +882,7 @@ def create_plotly_radar(players_data, radar_config, bg_color="#111111"):
 def render_plotly_with_legend_hover(fig, metrics, height=520):
     """
     Renders Plotly fig inside Streamlit with custom JS to:
-    - On legend hover: highlight target trace (opacity 1.0, text visible), dim others (opacity ~0.2, text hidden).
+    - On legend hover: highlight target trace (opacity 1.0, text visible), fade others to grey (opacity ~0.2, color grey, text hidden).
     - On legend unhover: reset opacities and hide text labels again.
     - Percentile labels appear on-chart only for hovered player.
     """
@@ -867,9 +899,10 @@ def render_plotly_with_legend_hover(fig, metrics, height=520):
           const data = gd.data || [];
           for (let i = 0; i < data.length; i++) {{
             Plotly.restyle(gd, {{
-              'opacity': 0.95,
+              'opacity': 0.8,
               'textfont.color': 'rgba(0,0,0,0)',
-              'line.width': 2
+              'line.width': 2,
+              'line.color': gd.data[i].line.color
             }}, [i]);
           }}
         }};
@@ -886,13 +919,15 @@ def render_plotly_with_legend_hover(fig, metrics, height=520):
               Plotly.restyle(gd, {{
                 'opacity': 1.0,
                 'textfont.color': '#ffffff',
-                'line.width': 3.5
+                'line.width': 3.5,
+                'line.color': gd.data[i].line.color
               }}, [i]);
             }} else {{
               Plotly.restyle(gd, {{
                 'opacity': 0.2,
                 'textfont.color': 'rgba(0,0,0,0)',
-                'line.width': 2
+                'line.width': 2,
+                'line.color': 'grey'
               }}, [i]);
             }}
           }}
@@ -900,13 +935,11 @@ def render_plotly_with_legend_hover(fig, metrics, height=520):
         el.on('plotly_legendunhover', function(evt) {{
           resetStyles();
         }});
-        // Also allow legend click to isolate
         el.on('plotly_legendclick', function(evt) {{
           // Let Plotly handle visibility toggling; keep our styling consistent
           setTimeout(() => {{
             const gd = el;
             const data = gd.data || [];
-            // If exactly one trace is visible, show its text; others hidden
             const visibleIdx = [];
             data.forEach((tr, i) => {{
               if (tr.visible === true || tr.visible === undefined) visibleIdx.push(i);
@@ -916,35 +949,41 @@ def render_plotly_with_legend_hover(fig, metrics, height=520):
                 Plotly.restyle(gd, {{
                   'textfont.color': (i === visibleIdx[0]) ? '#ffffff' : 'rgba(0,0,0,0)',
                   'opacity': (i === visibleIdx[0]) ? 1.0 : 0.2,
-                  'line.width': (i === visibleIdx[0]) ? 3.5 : 2
+                  'line.width': (i === visibleIdx[0]) ? 3.5 : 2,
+                  'line.color': (i === visibleIdx[0]) ? gd.data[i].line.color : 'grey'
                 }}, [i]);
               }}
             }} else {{
-              // Reset when multiple visible
               const n = data.length;
               for (let i = 0; i < n; i++) {{
                 Plotly.restyle(gd, {{
                   'textfont.color': 'rgba(0,0,0,0)',
-                  'opacity': 0.95,
-                  'line.width': 2
+                  'opacity': 0.8,
+                  'line.width': 2,
+                  'line.color': gd.data[i].line.color
                 }}, [i]);
               }}
             }}
           }}, 0);
-          return false; // allow default toggle
+          return false;
         }});
       }})();
     </script>
     """
-    # Wrap to ensure proper spacing beneath
+    # Create a full-screen button
+    if st.button("Pop-out Radar Chart", key=f"fullscreen_{div_id}", help="Click to expand this chart vertically."):
+        components.html(wrapped, height=height + 60, scrolling=False)
+        st.session_state[f'expanded_{div_id}'] = not st.session_state.get(f'expanded_{div_id}', False)
+
+    height_to_use = 1000 if st.session_state.get(f'expanded_{div_id}') else height
+
     wrapped = f"""
     <div style="margin-bottom: 28px;">
       {html}
       {custom_js}
     </div>
     """
-    components.html(wrapped, height=height + 60, scrolling=False)
-
+    components.html(wrapped, height=height_to_use + 60, scrolling=False)
 # --- 7. STREAMLIT APP LAYOUT (UPDATED) ---
 st.title("⚽ Advanced Multi-Position Player Analysis v10.1")
 
